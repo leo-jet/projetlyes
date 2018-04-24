@@ -6,34 +6,82 @@
 </head>
 <body onload="goIntro()">
 
-    <div id="myDiagramDiv" style="border: solid 1px blue; width: 500px; height: 400px">
+    <div id="myDiagramDiv" style="border: solid 1px blue; width: 1100px; height: 800px">
     </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gojs/1.8.17/go.js"></script>
-<script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.js"></script>
+
+    <script>
+        function isInArray(value, array) {
+          return array.indexOf(value) > -1;
+        }
+        // hanouna : 661094353948044
+        // macron : 1535230416709539
     function goIntro() {
-        var $ = go.GraphObject.make;
-        var diagram = new go.Diagram("myDiagramDiv");
-        diagram.initialContentAlignment = go.Spot.Center;
-        diagram.nodeTemplate =
-            $(go.Node, go.Panel.Auto,
-                $(go.Shape,
-                    {figure: "RoundedRectangle"},
-                    new go.Binding("fill", "color")
-                ),
-                $(go.TextBlock,
-                    {margin: 3},
-                    new go.Binding("text", "key")
-                )
-            );
-        var nodeDataArray = [
-            {key:"Alpha", color: 'LightBlue'},
-            {key:"Beta", color: 'Orange'}
-        ];
-        var linkDataArray = [
-            {from: "Alpha", to: "Beta"}
-        ];
-        diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+        $.ajax({
+            url : '{% url 'api' %}',
+            type : 'POST',
+            data : {"id": "1535230416709539"},
+            dataType : 'json',
+            success : function(resultat, statut){ // success est toujours en place, bien sûr !
+                list_likes = resultat;
+                var my_go = go.GraphObject.make;
+                var diagram = new go.Diagram("myDiagramDiv");
+                diagram.initialContentAlignment = go.Spot.Center;
+                diagram.nodeTemplate =
+                    my_go(go.Node, go.Panel.Auto,
+                        my_go(go.Shape,
+                            {figure: "RoundedRectangle"},
+                            new go.Binding("fill", "color")
+                        ),
+                        my_go(go.TextBlock,
+                            {margin: 3},
+                            new go.Binding("text", "key")
+                        )
+                    );
+                var nodeDataArray = [];
+                var linkDataArray = [];
+                var tab = [];
+                var linkDataArray = [];
+                $.each( list_likes, function( key, value ) {
+                    console.log("Moi"+value.name);
+                    var c = '#'+Math.floor(Math.random()*16777215).toString(16);
+                    nodeDataArray.push({
+                        key:value.name,
+                        color: c
+                    });
+                    tab.push(value.name);
+                    var likes = value['like_pages'];
+                    $.each( likes, function( key1, value1 ) {
+                        console.log("mes amis-------------"+value.name);
+                        linkDataArray.push({
+                            from: value.name,
+                            to: value1.name
+                        });
+                        if(isInArray(value1.name, tab)){
+                            console.log("deja------------------"+value1.name);
+                        }else{
+                            var c = '#'+Math.floor(Math.random()*16777215).toString(16);
+                            nodeDataArray.push({
+                                key:value1.name,
+                                color: c
+                            });
+                        }
+                    });
+                });
+                /**var nodeDataArray = [
+                    {key:"Alpha", color: '#abdc33'},
+                    {key:"Beta", color: 'Orange'}
+                ];
+                var linkDataArray = [
+                    {from: "Alpha", to: "Beta"}
+                ];**/
+                diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+            },
+            error : function(resultat, statut, erreur){
+            }
+        });
     }
 </script>
 </body>

@@ -15,9 +15,10 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
-from .views import index
+from .views import index, get_graph_data
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^$', index, name='home')
+    url(r'^$', index, name='home'),
+    url(r'^api_graph/$', get_graph_data, name='api')
 ]
