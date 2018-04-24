@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body onload="goIntro()">
+
+    <div id="myDiagramDiv" style="border: solid 1px blue; width: 500px; height: 400px">
+    </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gojs/1.8.17/go.js"></script>
+<script>
+    function goIntro() {
+        var $ = go.GraphObject.make;
+        var diagram = new go.Diagram("myDiagramDiv");
+        diagram.initialContentAlignment = go.Spot.Center;
+        diagram.nodeTemplate =
+            $(go.Node, go.Panel.Auto,
+                $(go.Shape,
+                    {figure: "RoundedRectangle"},
+                    new go.Binding("fill", "color")
+                ),
+                $(go.TextBlock,
+                    {margin: 3},
+                    new go.Binding("text", "key")
+                )
+            );
+        var nodeDataArray = [
+            {key:"Alpha", color: 'LightBlue'},
+            {key:"Beta", color: 'Orange'}
+        ];
+        var linkDataArray = [
+            {from: "Alpha", to: "Beta"}
+        ];
+        diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+    }
+</script>
+</body>
+</html>
